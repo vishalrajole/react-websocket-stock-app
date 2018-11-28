@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import StockItem from '../stock-item/StockItem';
 import { connect } from "react-redux";
+import { Heading, Loader, Table } from './StockList.style';
 
 class StockList extends Component {
     render() {
         return (
             <React.Fragment>
-                <h3 className="heading">Stock List</h3>
-                {this.props.stocks.length > 0 && <table className="table">
+                <Heading>Stock List</Heading>
+                {this.props.stocks.length > 0 && <Table>
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -21,8 +22,8 @@ class StockList extends Component {
                                 <StockItem {...stock} key={index}></StockItem>)
                         }
                     </tbody>
-                </table>}
-                {!this.props.stocks.length && <p className="loader"> Loading ... </p>}
+                </Table>}
+                {!this.props.stocks.length && <Loader> Loading ... </Loader>}
             </React.Fragment>
         )
     }

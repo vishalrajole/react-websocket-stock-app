@@ -11,7 +11,8 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const socket = new window.WebSocket("ws://stocks.mnet.website");
+    const SERVER_URL = 'ws://stocks.mnet.website';
+    const socket = new window.WebSocket(SERVER_URL);
 
     socket.onopen = (event) => {
       socket.send('Ping!');
@@ -65,7 +66,7 @@ const mapDispatchToProps = (dispach) => {
   return ({
     receivedata: (data) => {
       return dispach({
-        type: 'RECEIVED',
+        type: 'UPDATE',
         payload: data
       });
     }
