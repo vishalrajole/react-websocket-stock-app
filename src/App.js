@@ -1,28 +1,74 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { connect } from "react-redux"
+import io from 'socket.io-client';
+import StockList from './components/stock-list/StockList';
 import './App.css';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { isWebsocketError: '' };
+  }
+
+  componentDidMount() {
+    const socket = new WebSocket("ws://stocks.mnet.website");
+
+    socket.onopen = (event) => {
+      socket.send('Ping!');
+    };
+
+    socket.onmessage = (event) => {
+      this.props.receivedata(event.data);
+    };
+
+    socket.onerror = (event) => {
+      this.setState({ isWebsocketError: "Something went wrong. Please refresh..." });
+    };
+
+    socket.onclose = (event) => {
+      this.setState({ isWebsocketError: "Websockets are closed. Please check after some time" })
+    };
+
+    /* 
+    var socketOptions = {
+      "force new connection": true,
+      "reconnectionAttempts": "Infinity", 
+      "timeout": 100,                  
+      "transports": ["websocket"]
+    };
+    const socket = io.connect('ws://stocks.mnet.website', socketOptions);
+    socket.on('connect', function () {
+      console.log('inside connect')
+    });
+    socket.on('event', function (data) {
+      console.log('inside event', data)
+    });
+    socket.on('disconnect', function () {
+      console.log('inside disconnect')
+    }); 
+    */
+  }
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
+      <React.Fragment>
+        {!this.state.isWebsocketError &&
+          <StockList></StockList>
+        }
+        {this.state.isWebsocketError &&
+          <div>{this.state.isWebsocketError}</div>}
+      </React.Fragment>
     );
   }
 }
 
-export default App;
+const mapDispatchToProps = (dispach) => {
+  return ({
+    receivedata: (data) => {
+      return dispach({
+        type: 'RECEIVED',
+        payload: data
+      });
+    }
+  });
+}
+export default connect(null, mapDispatchToProps)(App);
