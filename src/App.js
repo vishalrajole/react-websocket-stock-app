@@ -11,7 +11,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const socket = new WebSocket("ws://stocks.mnet.website");
+    const socket = new window.WebSocket("wss://stocks.mnet.website");
 
     socket.onopen = (event) => {
       socket.send('Ping!');
